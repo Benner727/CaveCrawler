@@ -1,6 +1,4 @@
 #include "Engine/Square.h"
-
-#include "Game/Random.h"
 #include "Game/GameLayer.h"
 
 class CaveCrawler : public Square::Application
@@ -8,7 +6,7 @@ class CaveCrawler : public Square::Application
 public:
 	CaveCrawler()
 	{
-		Random::Init();
+		srand(time(nullptr));
 
 		auto layer = new GameLayer();
 		PushLayer(layer);
