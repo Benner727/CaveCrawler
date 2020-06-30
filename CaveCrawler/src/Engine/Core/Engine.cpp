@@ -11,9 +11,15 @@ namespace Square {
 	Engine::Engine()
 		: mGraphics(Graphics::Instance()), mAssetManager(AssetManager::Instance()),
 		mAudio(Audio::Instance()), mInputHandler(InputHandler::Instance()),
-		mTimer(Timer::Instance())
+		mTimer(Timer::Instance()), mPhysicsManager(PhysicsManager::Instance())
 	{
 		mQuit = !mGraphics.Initialized();
+
+		mPhysicsManager.SetLayerCollisionMask(PhysEntity::CollisionLayers::Friendly, PhysEntity::CollisionFlags::Hostile | PhysEntity::CollisionFlags::HostileProjectiles | PhysEntity::CollisionFlags::PowerUp);
+		mPhysicsManager.SetLayerCollisionMask(PhysEntity::CollisionLayers::FriendlyProjectiles, PhysEntity::CollisionFlags::Hostile);
+		mPhysicsManager.SetLayerCollisionMask(PhysEntity::CollisionLayers::Hostile, PhysEntity::CollisionFlags::Friendly | PhysEntity::CollisionFlags::FriendlyProjectiles);
+		mPhysicsManager.SetLayerCollisionMask(PhysEntity::CollisionLayers::HostileProjectiles, PhysEntity::CollisionFlags::Friendly);
+		mPhysicsManager.SetLayerCollisionMask(PhysEntity::CollisionLayers::PowerUp, PhysEntity::CollisionFlags::Friendly);
 	}
 
 	Engine::~Engine()
@@ -53,6 +59,8 @@ namespace Square {
 
 	void Engine::LateUpdate()
 	{
+		mPhysicsManager.Update();
+
 		mInputHandler.UpdatePrevInput();
 	}
 

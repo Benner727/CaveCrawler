@@ -3,6 +3,7 @@
 #include "Engine/Managers/Audio.h"
 #include "Engine/Managers/InputHandler.h"
 #include "Engine/Utilities/Timer.h"
+#include "Engine/Physics/PhysicsManager.h"
 #include "Engine/Core/Layer.h"
 
 #include <vector>
@@ -22,6 +23,8 @@ namespace Square {
 		InputHandler& mInputHandler;
 
 		Timer& mTimer;
+
+		PhysicsManager& mPhysicsManager;
 
 		std::vector<Layer*> mLayerStack;
 
