@@ -156,9 +156,17 @@ void Map::Render()
 		if (mFocus != nullptr)
 		{
 			if (!mFOV->InFOV(tile->Pos().x / TileSize(), tile->Pos().y / TileSize()))
-				tile->Dim();
+			{
+				if (tile->Explored())
+					tile->Dim();
+			}
+			else
+				tile->Explore();
 		}
+		else
+			tile->Explore();
 		
-		tile->Render();
+		if (tile->Explored())
+			tile->Render();
 	}
 }

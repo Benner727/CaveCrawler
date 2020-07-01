@@ -49,7 +49,7 @@ namespace Square {
 		if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096) < 0)
 			LOG(ERROR) << "Mixer Initialization Error: " << Mix_GetError();
 
-		SFXVolume(50, 1); //Player shooting
+		SFXVolume(10, 1); //Player shooting
 		SFXVolume(25, 2); //Player reloading
 	}
 

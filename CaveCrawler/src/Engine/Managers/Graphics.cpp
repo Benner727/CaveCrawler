@@ -54,7 +54,7 @@ namespace Square {
 			return false;
 		}
 
-		mDefaultDrawColor = { 0x00, 0x00, 0x00, 0xFF };
+		mDefaultDrawColor = { 0x1D, 0x1D, 0x1D, 0xFF };
 		SDL_SetRenderDrawColor(mRenderer.get(), mDefaultDrawColor.r, mDefaultDrawColor.g, mDefaultDrawColor.b, mDefaultDrawColor.a);
 		SDL_SetRenderDrawBlendMode(mRenderer.get(), SDL_BLENDMODE_BLEND);
 

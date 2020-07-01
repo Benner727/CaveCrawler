@@ -7,6 +7,8 @@ Tile::Tile(Square::Sprite* sprite, TileType type, int x, int y)
 
 	mTileType = type;
 
+	mExplored = false;
+
 	Pos(Square::Vector2(x * TILE_SIZE + TILE_SIZE * 0.5f, y * TILE_SIZE + TILE_SIZE * 0.5f));
 
 	AddCollider(new Square::BoxCollider(mSprite->ScaledDimensions()));

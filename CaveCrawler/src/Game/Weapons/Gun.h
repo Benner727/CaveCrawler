@@ -19,6 +19,7 @@ private:
 	bool mReloading;
 
 	void HandleReload();
+	void HandleShot();
 
 public:
 	void CancelReload();

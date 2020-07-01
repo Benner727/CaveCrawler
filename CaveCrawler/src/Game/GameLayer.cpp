@@ -1,5 +1,7 @@
 #include "GameLayer.h"
 
+#include "Game/Weapons/Gun.h"
+
 GameLayer::GameLayer()
 {
 	mMap = std::make_shared<Map>(48 * 2, 32 * 2);
@@ -7,6 +9,9 @@ GameLayer::GameLayer()
 
 	mPlayer->Pos(mMap->Entry());
 	mMap->SetFocus(mPlayer.get());
+
+	Gun* gun = new Gun(mMap);
+	mPlayer->GiveWeapon(gun);
 }
 
 GameLayer::~GameLayer()

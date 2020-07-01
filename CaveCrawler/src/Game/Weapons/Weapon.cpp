@@ -1,7 +1,8 @@
 #include "Weapon.h"
 
 Weapon::Weapon(std::shared_ptr<Map> map, Square::Vector2 weaponOffset)
-	: mMap(map), mWeaponOffset(weaponOffset), mTimer(Square::Timer::Instance())
+	: mMap(map), mWeaponOffset(weaponOffset), 
+	mTimer(Square::Timer::Instance()), mAudio(Square::Audio::Instance())
 {
 	mSprite = nullptr;
 

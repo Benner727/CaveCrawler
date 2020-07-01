@@ -14,6 +14,8 @@ private:
 
 	TileType mTileType;
 
+	bool mExplored;
+
 public:
 	Tile(Square::Sprite* sprite, TileType type, int x, int y);
 	~Tile();
@@ -21,6 +23,9 @@ public:
 	inline TileType Type() const { return mTileType; }
 
 	inline void Dim() { mSprite->DimSprite(); }
+
+	inline void Explore() { mExplored = true; }
+	inline bool Explored() const { return mExplored; }
 
 	void Update();
 	void Render();

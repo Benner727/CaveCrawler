@@ -8,6 +8,8 @@ private:
 	Square::Timer& mTimer;
 
 protected:
+	Square::Audio& mAudio;
+
 	Square::Sprite* mSprite;
 	std::string mName;
 
