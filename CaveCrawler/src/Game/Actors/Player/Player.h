@@ -1,7 +1,6 @@
 #pragma once
 
-#include "Game/Actors/Actor.h"
-#include "Engine/Square.h"
+#include "Game/Weapons/Weapon.h"
 
 class Player : public Actor
 {
@@ -19,12 +18,20 @@ private:
 	bool mSprinting;
 	bool mSprintRecharge;
 
+	int mFullHealth;
+	float mHealTimer;
+	float mImmunityTimer;
+
 	void HandleMovement();
 	void HandleCollision();
 
 public:
 	Player(std::shared_ptr<Map> map);
 	~Player();
+
+	void Hit(PhysEntity* other) override;
+
+	inline bool Dead() const { return (mHealth <= 0); }
 
 	void Update();
 	void Render();

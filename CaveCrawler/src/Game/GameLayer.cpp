@@ -18,10 +18,14 @@ void GameLayer::OnUpdate()
 {
 	mMap->Update();
 	mPlayer->Update();
+
+	ProjectileManager::Instance().Update();
 }
 
 void GameLayer::OnRender()
 {
 	mMap->Render();
 	mPlayer->Render();
+
+	ProjectileManager::Instance().Render();
 }

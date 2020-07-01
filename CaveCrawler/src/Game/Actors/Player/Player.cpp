@@ -15,6 +15,13 @@ Player::Player(std::shared_ptr<Map> map)
 	mSprinting = false;
 	mSprintRecharge = false;
 
+	mFullHealth = 100;
+	mHealth = mFullHealth;
+
+	mHealTimer = 1.0f;
+
+	mImmunityTimer = 0.0f;
+
 	AddCollider(new Square::BoxCollider(Square::Vector2(mSprite->ScaledDimensions().x, mSprite->ScaledDimensions().y)));
 
 	mCollisionLayer = CollisionLayers::Friendly;
@@ -24,6 +31,24 @@ Player::Player(std::shared_ptr<Map> map)
 Player::~Player()
 {
 	delete mSprite;
+}
+
+void Player::Hit(PhysEntity* other)
+{
+	if (other == nullptr)
+		return;
+
+	if (std::find(mHitBy.begin(), mHitBy.end(), other->Id()) != mHitBy.end())
+		return;
+
+	mHitBy.push_back(other->Id());
+
+	mSprite->Flash();
+
+	// Apply damage
+	mHealth = (mHealth - other->Damage());
+
+	if (mHealth < 0) mHealth = 0;
 }
 
 void Player::HandleMovement()
@@ -115,6 +140,21 @@ void Player::Update()
 {
 	HandleMovement();
 	HandleCollision();
+
+	if (mHealTimer <= 0.0f)
+	{
+		mHealTimer = 1.0f;
+	}
+	else
+		mHealTimer -= mTimer.DeltaTime();
+
+	if (mImmunityTimer <= 0.0f)
+	{
+		mHitBy.clear();
+		mImmunityTimer = 0.33f;
+	}
+	else if (mHitBy.size())
+		mImmunityTimer -= mTimer.DeltaTime();
 
 	Square::Graphics::Instance().Camera(Pos());
 }

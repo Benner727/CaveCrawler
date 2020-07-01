@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Engine/Square.h"
 #include "Actors/Player/Player.h"
 
 class GameLayer : public Square::Layer
