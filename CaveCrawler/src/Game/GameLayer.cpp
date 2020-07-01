@@ -6,6 +6,7 @@ GameLayer::GameLayer()
 	mPlayer = std::make_shared<Player>(mMap);
 
 	mPlayer->Pos(mMap->Entry());
+	mMap->SetFocus(mPlayer.get());
 }
 
 GameLayer::~GameLayer()

@@ -1,11 +1,18 @@
 #include "Map.h"
 
+#include "Game/Map/FOV.h"
+
 Map::Map(int width, int height)
 	: mWidth(width), mHeight(height)
 {
 	mMapGenerator = new CaveGenerator(mWidth, mHeight);
 
 	BuildMap();
+
+	mFOV = new FOV(this);
+	mFocus = nullptr;
+	mVisionRadius = 21;
+	mVisionTimer = 0.0f;
 }
 
 Map::~Map()
@@ -15,7 +22,7 @@ Map::~Map()
 	ClearMap();
 }
 
-bool Map::IsBoundary(int x, int y)
+bool Map::IsBoundary(int x, int y) const
 {
 	if (x < 0 || y < 0)
 		return true;
@@ -26,7 +33,7 @@ bool Map::IsBoundary(int x, int y)
 	return false;
 }
 
-bool Map::IsWalkable(int x, int y)
+bool Map::IsWalkable(int x, int y) const
 {
 	if (IsBoundary(x, y))
 		return false;
@@ -37,12 +44,43 @@ bool Map::IsWalkable(int x, int y)
 	return true;
 }
 
+bool Map::IsOpaque(int x, int y) const
+{
+	return !IsWalkable(x, y);
+}
+
 bool Map::Collides(Square::PhysEntity* entity, int x, int y)
 {
 	if (IsBoundary(x, y))
 		return true;
 
 	return (mMap[x + y * mWidth]->CheckCollision(entity));
+}
+
+bool Map::InFOV(Square::GameObject* entity) const
+{
+	int x = entity->Pos().x;
+	int y = entity->Pos().y;
+
+	if (mFOV->InFOV((int)x / TileSize(), (int)y / TileSize()))
+		return true;
+	else
+	{
+		if (!IsOpaque((int)(x + TileSize()) / TileSize(), (int)(y + TileSize()) / TileSize())
+			&& mFOV->InFOV((int)(x + TileSize()) / TileSize(), (int)(y + TileSize()) / TileSize()))
+			return true;
+		if (!IsOpaque((int)(x + TileSize()) / TileSize(), (int)(y - TileSize()) / TileSize())
+			&& mFOV->InFOV((int)(x + TileSize()) / TileSize(), (int)(y - TileSize()) / TileSize()))
+			return true;
+		if (!IsOpaque((int)(x - TileSize()) / TileSize(), (int)(y + TileSize()) / TileSize())
+			&& mFOV->InFOV((int)(x - TileSize()) / TileSize(), (int)(y + TileSize()) / TileSize()))
+			return true;
+		if (!IsOpaque((int)(x - TileSize()) / TileSize(), (int)(y - TileSize()) / TileSize())
+			&& mFOV->InFOV((int)(x - TileSize()) / TileSize(), (int)(y - TileSize()) / TileSize()))
+			return true;
+	}
+
+	return false;
 }
 
 void Map::ClearMap()
@@ -98,10 +136,29 @@ void Map::Update()
 {
 	if (Square::InputHandler::Instance().KeyPressed(SDL_SCANCODE_SPACE))
 		BuildMap();
+
+	if (mFocus != nullptr)
+	{
+		if (mVisionTimer <= 0.0f)
+		{
+			mFOV->CalculateFOV(mFocus->Pos().x / TileSize(), mFocus->Pos().y / TileSize(), mVisionRadius);
+			mVisionTimer = 1.0f;
+		}
+		else
+			mVisionTimer -= Square::Timer::Instance().DeltaTime();
+	}
 }
 
 void Map::Render()
 {
 	for (const auto& tile : mMap)
+	{
+		if (mFocus != nullptr)
+		{
+			if (!mFOV->InFOV(tile->Pos().x / TileSize(), tile->Pos().y / TileSize()))
+				tile->Dim();
+		}
+		
 		tile->Render();
+	}
 }

@@ -21,6 +21,8 @@ namespace Square {
 		mFlash = false;
 		mFlashColor = { 0, 0, 0, 255 };
 		mFlashFrames = 0;
+
+		mDimSprite = false;
 	}
 
 	Sprite::Sprite(const std::string& filename)
@@ -50,6 +52,8 @@ namespace Square {
 		mFlash = false;
 		mFlashColor = { 0, 0, 0, 255 };
 		mFlashFrames = 0;
+
+		mDimSprite = false;
 	}
 
 	Sprite::Sprite(const std::string& filename, int x, int y, int w, int h)
@@ -81,6 +85,8 @@ namespace Square {
 		mFlash = false;
 		mFlashColor = { 0, 0, 0, 255 };
 		mFlashFrames = 0;
+
+		mDimSprite = false;
 	}
 
 	Sprite::Sprite(const char& c, const std::string& fontpath, int size, SDL_Color color)
@@ -110,6 +116,8 @@ namespace Square {
 		mFlash = false;
 		mFlashColor = { 0, 0, 0, 255 };
 		mFlashFrames = 0;
+
+		mDimSprite = false;
 	}
 
 	Vector2 Sprite::ScaledDimensions()
@@ -146,6 +154,11 @@ namespace Square {
 		mFlash = true;
 	}
 
+	void Sprite::DimSprite()
+	{
+		mDimSprite = true;
+	}
+
 	void Sprite::Render(bool ignoreCamera)
 	{
 		if (mTexture)
@@ -164,6 +177,12 @@ namespace Square {
 				SDL_SetTextureColorMod(mTexture.get(), mFlashColor.r, mFlashColor.g, mFlashColor.b);
 				SDL_SetTextureAlphaMod(mTexture.get(), mFlashColor.a);
 				mFlashFrames++;
+			}
+			else if (mDimSprite)
+			{
+				SDL_SetTextureColorMod(mTexture.get(), 128, 128, 128);
+				SDL_SetTextureAlphaMod(mTexture.get(), 255);
+				mDimSprite = false;
 			}
 			else
 			{

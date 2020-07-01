@@ -20,6 +20,8 @@ public:
 
 	inline TileType Type() const { return mTileType; }
 
+	inline void Dim() { mSprite->DimSprite(); }
+
 	void Update();
 	void Render();
 };

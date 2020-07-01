@@ -28,6 +28,8 @@ namespace Square {
 		SDL_Color mFlashColor;
 		int mFlashFrames;
 
+		bool mDimSprite;
+
 	public:
 		Sprite();
 		Sprite(const std::string& filename);
@@ -44,6 +46,8 @@ namespace Square {
 
 		void FlashColor(SDL_Color color);
 		void Flash();
+
+		void DimSprite();
 
 		virtual void Render(bool ignoreCamera = false);
 	};
