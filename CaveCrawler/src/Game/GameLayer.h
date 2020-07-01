@@ -1,12 +1,13 @@
 #pragma once
 
 #include "Engine/Square.h"
-#include "Map/Map.h"
+#include "Actors/Player/Player.h"
 
 class GameLayer : public Square::Layer
 {
 private:
-	Map* mMap;
+	std::shared_ptr<Map> mMap;
+	std::shared_ptr<Player> mPlayer;
 
 public:
 	GameLayer();

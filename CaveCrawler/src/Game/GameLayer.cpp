@@ -2,20 +2,25 @@
 
 GameLayer::GameLayer()
 {
-	mMap = new Map(48 * 2, 32 * 2);
+	mMap = std::make_shared<Map>(48 * 2, 32 * 2);
+	mPlayer = std::make_shared<Player>(mMap);
+
+	mPlayer->Pos(mMap->Entry());
 }
 
 GameLayer::~GameLayer()
 {
-	delete mMap;
+	
 }
 
 void GameLayer::OnUpdate()
 {
 	mMap->Update();
+	mPlayer->Update();
 }
 
 void GameLayer::OnRender()
 {
 	mMap->Render();
+	mPlayer->Render();
 }

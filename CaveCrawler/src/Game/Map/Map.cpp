@@ -15,6 +15,36 @@ Map::~Map()
 	ClearMap();
 }
 
+bool Map::IsBoundary(int x, int y)
+{
+	if (x < 0 || y < 0)
+		return true;
+
+	if (x >= mWidth || y >= mHeight)
+		return true;
+
+	return false;
+}
+
+bool Map::IsWalkable(int x, int y)
+{
+	if (IsBoundary(x, y))
+		return false;
+
+	if (mMap[x + y * mWidth] != nullptr)
+		return (mMap[x + y * mWidth]->Type() == TileType::Empty);
+
+	return true;
+}
+
+bool Map::Collides(Square::PhysEntity* entity, int x, int y)
+{
+	if (IsBoundary(x, y))
+		return true;
+
+	return (mMap[x + y * mWidth]->CheckCollision(entity));
+}
+
 void Map::ClearMap()
 {
 	for (auto& tile : mMap)
@@ -42,6 +72,26 @@ void Map::BuildMap()
 				mMap.push_back(new Tile(new Square::Sprite("Wall.png"), TileType::Solid, x, y));
 		}
 	}
+
+	Square::Graphics::Instance().SetLimit(Square::Vector2(mWidth * TileSize(), mHeight * TileSize()));
+}
+
+Square::Vector2 Map::Entry() const
+{
+	Square::Vector2 entry;
+	entry.x = mMapGenerator->GetStart().x * TileSize() + TileSize() * 0.5f;
+	entry.y = mMapGenerator->GetStart().y * TileSize() + TileSize() * 0.5f;
+
+	return entry;
+}
+
+Square::Vector2 Map::Exit() const
+{
+	Square::Vector2 exit;
+	exit.x = mMapGenerator->GetEnd().x * TileSize() + TileSize() * 0.5f;
+	exit.y = mMapGenerator->GetEnd().y * TileSize() + TileSize() * 0.5f;
+
+	return exit;
 }
 
 void Map::Update()

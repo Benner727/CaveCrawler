@@ -6,6 +6,9 @@ enum class TileType { Empty = 0, Solid };
 
 class Tile : public Square::PhysEntity
 {
+public:
+	static const int TILE_SIZE = 32;
+
 private:
 	Square::Sprite* mSprite;
 

@@ -71,7 +71,7 @@ namespace Square {
 			return false;
 		}
 
-		SDL_RenderSetLogicalSize(mRenderer.get(), SCREEN_WIDTH * 4, SCREEN_HEIGHT * 4);
+		//SDL_RenderSetLogicalSize(mRenderer.get(), SCREEN_WIDTH * 4, SCREEN_HEIGHT * 4);
 		mCamera = SDL_Rect{ 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
 
 		return true;
