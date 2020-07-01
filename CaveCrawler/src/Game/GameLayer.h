@@ -1,11 +1,12 @@
 #pragma once
 
 #include "Engine/Square.h"
+#include "Map/Map.h"
 
 class GameLayer : public Square::Layer
 {
 private:
-	Square::Sprite* mSprite;
+	Map* mMap;
 
 public:
 	GameLayer();

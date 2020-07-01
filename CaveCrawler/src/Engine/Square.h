@@ -21,3 +21,9 @@
 #include "Engine/Utilities/MathHelper.h"
 #include "Engine/Utilities/Timer.h"
 #include "Engine/Utilities/Logger.h"
+
+// Physics
+#include "Engine/Physics/BoxCollider.h"
+#include "Engine/Physics/CircleCollider.h"
+#include "Engine/Physics/PhysEntity.h"
+#include "Engine/Physics/PhysicsManager.h"

@@ -10,20 +10,19 @@ private:
 
 	int mSeed;
 
-	inline void Init()
+	inline void Init(int seed)
 	{
+		mSeed = seed;
 		mRandomEngine.seed(mSeed);
 	}
 
 public:
 	Random(int seed = std::random_device()())
-		: mSeed(seed)
 	{
-		Init();
+		Init(seed);
 	}
 
-	inline void Seed(int seed) { mSeed = seed; }
-
+	inline void Seed(int seed) { Init(seed); }
 	inline int Seed() const { return mSeed; }
 
 	inline float Float()

@@ -2,21 +2,20 @@
 
 GameLayer::GameLayer()
 {
-	mSprite = new Square::Sprite("Player.png");
-	mSprite->Pos(Square::Vector2(Square::Graphics::SCREEN_WIDTH * 0.5f, Square::Graphics::SCREEN_HEIGHT * 0.5f));
+	mMap = new Map(48 * 2, 32 * 2);
 }
 
 GameLayer::~GameLayer()
 {
-	delete mSprite;
+	delete mMap;
 }
 
 void GameLayer::OnUpdate()
 {
-	mSprite->Update();
+	mMap->Update();
 }
 
 void GameLayer::OnRender()
 {
-	mSprite->Render();
+	mMap->Render();
 }
