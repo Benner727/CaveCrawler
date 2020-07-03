@@ -41,7 +41,7 @@ private:
 	const int DIAGONAL_COST = 14;
 	const int MAX_COST = 320; // 32 tiles orthogonally
 
-	const Map& mMap;
+	std::shared_ptr<Map> mMap;
 	Point mStart;
 	Point mEnd;
 	std::list<Node> mOpenNodes;
@@ -55,8 +55,8 @@ private:
 	int CalculateDistanceToEnd(Point p);
 
 public:
-	PathFinder(const Map& map);
+	PathFinder(std::shared_ptr<Map> map);
 	~PathFinder() = default;
 
-	std::list<Point> GeneratePath(Point source, Point destination, bool useDiagonals = true);
+	std::list<Point> GeneratePath(Square::Vector2 source, Square::Vector2 destination, bool useDiagonals = true);
 };

@@ -5,28 +5,28 @@ bool PathFinder::CanWalkTo(Point p, int direction)
 	switch (direction)
 	{
 	case Direction::north:
-		return mMap.IsWalkable(p.x, p.y -1);
+		return mMap->IsWalkable(p.x, p.y -1);
 		break;
 	case Direction::east:
-		return mMap.IsWalkable(p.x + 1, p.y);
+		return mMap->IsWalkable(p.x + 1, p.y);
 		break;
 	case Direction::south:
-		return mMap.IsWalkable(p.x, p.y + 1);
+		return mMap->IsWalkable(p.x, p.y + 1);
 		break;
 	case Direction::west:
-		return mMap.IsWalkable(p.x - 1, p.y);
+		return mMap->IsWalkable(p.x - 1, p.y);
 		break;
 	case Direction::northeast:
-		return mMap.IsWalkable(p.x, p.y - 1) && mMap.IsWalkable(p.x + 1, p.y) && mMap.IsWalkable(p.x + 1, p.y - 1);
+		return mMap->IsWalkable(p.x, p.y - 1) && mMap->IsWalkable(p.x + 1, p.y) && mMap->IsWalkable(p.x + 1, p.y - 1);
 		break;
 	case Direction::northwest:
-		return mMap.IsWalkable(p.x, p.y - 1) && mMap.IsWalkable(p.x - 1, p.y) && mMap.IsWalkable(p.x - 1, p.y - 1);
+		return mMap->IsWalkable(p.x, p.y - 1) && mMap->IsWalkable(p.x - 1, p.y) && mMap->IsWalkable(p.x - 1, p.y - 1);
 		break;
 	case Direction::southeast:
-		return mMap.IsWalkable(p.x, p.y + 1) && mMap.IsWalkable(p.x + 1, p.y) && mMap.IsWalkable(p.x + 1, p.y + 1);
+		return mMap->IsWalkable(p.x, p.y + 1) && mMap->IsWalkable(p.x + 1, p.y) && mMap->IsWalkable(p.x + 1, p.y + 1);
 		break;
 	case Direction::southwest:
-		return mMap.IsWalkable(p.x, p.y + 1) && mMap.IsWalkable(p.x - 1, p.y) && mMap.IsWalkable(p.x - 1, p.y + 1);
+		return mMap->IsWalkable(p.x, p.y + 1) && mMap->IsWalkable(p.x - 1, p.y) && mMap->IsWalkable(p.x - 1, p.y + 1);
 		break;
 	}
 }
@@ -98,17 +98,21 @@ int PathFinder::CalculateDistanceToEnd(Point p)
 	return D * (x + y) + (D2 - 2 * D) * std::min(x, y);
 }
 
-PathFinder::PathFinder(const Map& map)
+PathFinder::PathFinder(std::shared_ptr<Map> map)
 	: mMap(map)
 {
 	mUseDiagonals = true;
 }
 
 
-std::list<Point> PathFinder::GeneratePath(Point source, Point destination, bool useDiagonals)
+std::list<Point> PathFinder::GeneratePath(Square::Vector2 source, Square::Vector2 destination, bool useDiagonals)
 {
-	mStart = source;
-	mEnd = destination;
+	mStart.x = source.x / mMap->TileSize();
+	mStart.y = source.y / mMap->TileSize();
+	
+	mEnd.x = destination.x / mMap->TileSize();
+	mEnd.y = destination.y / mMap->TileSize();
+
 	mUseDiagonals = useDiagonals;
 	std::list<Point> path;
 
