@@ -3,13 +3,7 @@
 #include <queue>
 
 #include "Game/Random.h"
-
-struct Point {
-	int x, y;
-
-	Point(int x = 0, int y = 0)
-		: x(x), y(y) {}
-};
+#include "Game/Map/Point.h"
 
 class CaveGenerator
 {
