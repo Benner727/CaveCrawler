@@ -31,130 +31,171 @@ bool PathFinder::CanWalkTo(Point p, int direction)
 	}
 }
 
-bool PathFinder::FillOpenNodes(Node& n)
+void PathFinder::CalculateLos(Point pos)
 {
-	int stepCost, distanceFromStart, distanceFromEnd;
-	Point neighbor;
+	int xDif = mSource.x - pos.x;
+	int yDif = mSource.y - pos.y;
+
+	int xDifAbs = abs(xDif);
+	int yDifAbs = abs(yDif);
+
+	bool hasLos = false;
+
+	int xDifOne = Square::sgn(xDif);
+	int yDifOne = Square::sgn(yDif);
+
+	if (xDifAbs >= yDifAbs)
+	{
+		if (mLosGrid[(pos.x + xDifOne) + pos.y * mMap->Width()])
+			hasLos = true;
+	}
+
+	if (yDifAbs >= xDifAbs)
+	{
+		if (mLosGrid[pos.x + (pos.y + yDifOne) * mMap->Width()])
+			hasLos = true;
+	}
+
+	if (yDifAbs > 0 && xDifAbs > 0) 
+	{
+		if (!mLosGrid[(pos.x + xDifOne) + (pos.y + yDifOne) * mMap->Width()])
+		{
+			hasLos = false;
+		}
+		else if (yDifAbs == xDifAbs) 
+		{
+			if (mDijkstraGrid[(pos.x + xDifOne) + pos.y * mMap->Width()] == -1 || mDijkstraGrid[pos.x + (pos.y + yDifOne) * mMap->Width()] == -1)
+				hasLos = false;
+		}
+	}
+
+	mLosGrid[pos.x + pos.y * mMap->Width()] = hasLos;
+}
+
+void PathFinder::GenerateDijkstraGrid()
+{
+	mDijkstraGrid = std::vector<int>(mMap->Width() * mMap->Height(), -1);
+	mLosGrid = std::vector<bool>(mMap->Width() * mMap->Height(), false);
 
 	int total_directions = 4;
 	if (mUseDiagonals) total_directions = 8;
 
-	for (int direction = 0; direction < total_directions; direction++)
+	std::queue<Point> queue;
+	int distance = 0;
+
+	queue.push(mSource);
+	mDijkstraGrid[mSource.x + mSource.y * mMap->Width()] = distance;
+	mLosGrid[mSource.x + mSource.y * mMap->Width()] = true;
+
+	while (queue.size() > 0)
 	{
-		neighbor = n.position;
-		neighbor.Translate(direction);
+		Point position = queue.front();
+		queue.pop();
 
-		if (CanWalkTo(n.position, direction))
+		distance = mDijkstraGrid[position.x + position.y * mMap->Width()];
+
+		for (int direction = 0; direction < total_directions; direction++)
 		{
-			if (neighbor == mEnd) return true;
-
-			stepCost = (direction < 4) ? ORTHOGONAL_COST : DIAGONAL_COST;
-			distanceFromStart = n.cost + stepCost;
-			distanceFromEnd = CalculateDistanceToEnd(neighbor);
-
-			if (distanceFromStart < MAX_COST && !UnviablePoint(neighbor, distanceFromStart + distanceFromEnd))
+			Point newPosition = position.Translate(direction);
+			
+			if (mDijkstraGrid[newPosition.x + newPosition.y * mMap->Width()] == -1 && mMap->IsWalkable(newPosition.x, newPosition.y))
 			{
-				Node newNode;
-				newNode.position = neighbor;
-				newNode.parent = n.position;
-				newNode.distance = distanceFromEnd;
-				newNode.cost = distanceFromStart;
-
-				mOpenNodes.push_back(newNode);
+				queue.push(newPosition);
+				mDijkstraGrid[newPosition.x + newPosition.y * mMap->Width()] = distance + 1;
+				CalculateLos(newPosition);
 			}
 		}
 	}
-
-	return false;
 }
 
-bool PathFinder::UnviablePoint(Point p, int cost)
+void PathFinder::GenerateFlowField()
 {
-	std::list<Node>::iterator i = std::find(mClosedNodes.begin(), mClosedNodes.end(), p);
-	if (i != mClosedNodes.end())
+	for (int y = 0; y < mMap->Height(); y++)
 	{
-		if ((*i).cost + (*i).distance < cost) return true;
-		mClosedNodes.erase(i);
-		return false;
-	}
-
-	i = std::find(mOpenNodes.begin(), mOpenNodes.end(), p);
-	if (i != mOpenNodes.end())
-	{
-		if ((*i).cost + (*i).distance < cost) return true;
-		mOpenNodes.erase(i);
-		return false;
-	}
-
-	return false;
-}
-
-int PathFinder::CalculateDistanceToEnd(Point p)
-{
-	int x = abs(mEnd.x - p.x);
-	int y = abs(mEnd.y - p.y);
-	const int D = 10;
-	const int D2 = 14;
-	return D * (x + y) + (D2 - 2 * D) * std::min(x, y);
-}
-
-PathFinder::PathFinder(std::shared_ptr<Map> map)
-	: mMap(map)
-{
-	mUseDiagonals = true;
-}
-
-
-std::list<Point> PathFinder::GeneratePath(Square::Vector2 source, Square::Vector2 destination, bool useDiagonals)
-{
-	mStart.x = source.x / mMap->TileSize();
-	mStart.y = source.y / mMap->TileSize();
-	
-	mEnd.x = destination.x / mMap->TileSize();
-	mEnd.y = destination.y / mMap->TileSize();
-
-	mUseDiagonals = useDiagonals;
-	std::list<Point> path;
-
-	mOpenNodes.clear();
-	mClosedNodes.clear();
-
-	Node n;
-	n.cost = 0;
-	n.distance = CalculateDistanceToEnd(mStart);
-	n.position = mStart;
-	n.parent = 0;
-
-	mOpenNodes.push_back(n);
-
-	if (source == destination)
-		return path;
-
-	while (!mOpenNodes.empty())
-	{
-		mOpenNodes.sort();
-		mClosedNodes.push_back(mOpenNodes.front());
-		mOpenNodes.pop_front();
-
-		if (FillOpenNodes(mClosedNodes.back()))
+		for (int x = 0; x < mMap->Width(); x++)
 		{
-			path.push_front(mEnd);
-			path.push_front(mClosedNodes.back().position);
+			if (mDijkstraGrid[x + y * mMap->Width()] == -1)
+				continue;
 
-			Point parentPosition = mClosedNodes.back().parent;
-			for (std::list<Node>::reverse_iterator i = mClosedNodes.rbegin(); i != mClosedNodes.rend(); i++)
+			Point position(x, y);
+
+			int total_directions = 4;
+			if (mUseDiagonals) total_directions = 8;
+
+			int dir = -1;
+			int minDist = std::numeric_limits<int>::max();
+			for (int direction = 0; direction < total_directions; direction++)
 			{
-				if ((*i).position == parentPosition && !((*i).position == mStart))
+				if (CanWalkTo(position, direction))
 				{
-					path.push_front((*i).position);
-					parentPosition = (*i).parent;
+					Point newPosition = position.Translate(direction);
+					int dist = mDijkstraGrid[newPosition.x + newPosition.y * mMap->Width()] - mDijkstraGrid[position.x + position.y * mMap->Width()];
+
+					if (dist < minDist)
+					{
+						minDist = dist;
+						dir = direction;
+					}
 				}
 			}
 
-			path.push_front(mStart);
-			break;
+			if (dir != -1)
+				mFlowField[position] = position.Translate(dir);
 		}
 	}
+}
 
-	return path;
+void PathFinder::GeneratePaths()
+{
+	mSource.x = (round(mTarget->Pos().x - mTarget->Size().x * 0.5f)) / mMap->TileSize();
+	mSource.y = (round(mTarget->Pos().y - mTarget->Size().y * 0.5f)) / mMap->TileSize();
+
+	mDijkstraGrid.clear();
+	mLosGrid.clear();
+
+	mFlowField.clear();
+
+	GenerateDijkstraGrid();
+	GenerateFlowField();
+}
+
+PathFinder::PathFinder(std::shared_ptr<Map> map, std::shared_ptr<Square::GameObject> target)
+	: mMap(map), mTarget(target)
+{
+	GeneratePaths();
+}
+
+
+Point PathFinder::NextWaypoint(Square::Vector2 source, Square::Vector2 size)
+{
+	Point pos(round((source.x - size.x * 0.5f) / mMap->TileSize()), round((source.y - size.y * 0.5f) / mMap->TileSize()));
+
+	Point newPos = mFlowField[pos];
+
+	return newPos;
+}
+
+bool PathFinder::InLos(Square::Vector2 source, Square::Vector2 size)
+{
+	Point pos(round((source.x - size.x * 0.5f) / mMap->TileSize()), round((source.y - size.y * 0.5f) / mMap->TileSize()));
+
+	bool inLos = mLosGrid[pos.x + pos.y * mMap->Width()];
+
+	return inLos;
+}
+
+void PathFinder::Update()
+{
+	Point newSource;
+	
+	newSource.x = (round(mTarget->Pos().x - mTarget->Size().x * 0.5f)) / mMap->TileSize();
+	newSource.y = (round(mTarget->Pos().y - mTarget->Size().y * 0.5f)) / mMap->TileSize();
+
+	if (!(newSource == mSource))
+		GeneratePaths();
+}
+
+void PathFinder::Render()
+{
+
 }

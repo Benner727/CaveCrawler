@@ -12,6 +12,11 @@ GameLayer::GameLayer()
 
 	Gun* gun = new Gun(mMap);
 	mPlayer->GiveWeapon(gun);
+
+	mPathFinder = std::make_shared<PathFinder>(mMap, mPlayer);
+
+	mEnemies.push_back(new Drone(mMap, mPathFinder, mPlayer.get()));
+	mEnemies.back()->Pos(mMap->Exit());
 }
 
 GameLayer::~GameLayer()
@@ -25,12 +30,23 @@ void GameLayer::OnUpdate()
 	mPlayer->Update();
 
 	ProjectileManager::Instance().Update();
+
+	for (auto& enemy : mEnemies)
+		enemy->Update();
+
+	mPathFinder->Update();
 }
 
 void GameLayer::OnRender()
 {
 	mMap->Render();
+
+	mPathFinder->Render();
+
 	mPlayer->Render();
 
 	ProjectileManager::Instance().Render();
+
+	for (const auto& enemy : mEnemies)
+		enemy->Render();
 }

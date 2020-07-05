@@ -66,17 +66,17 @@ bool Map::InFOV(Square::GameObject* entity) const
 		return true;
 	else
 	{
-		if (!IsOpaque((int)(x + TileSize()) / TileSize(), (int)(y + TileSize()) / TileSize())
-			&& mFOV->InFOV((int)(x + TileSize()) / TileSize(), (int)(y + TileSize()) / TileSize()))
+		if (!IsOpaque((int)(x + TileSize() * 0.5f) / TileSize(), (int)(y + TileSize() * 0.5f) / TileSize())
+			&& mFOV->InFOV((int)(x + TileSize() * 0.5f) / TileSize(), (int)(y + TileSize() * 0.5f) / TileSize()))
 			return true;
-		if (!IsOpaque((int)(x + TileSize()) / TileSize(), (int)(y - TileSize()) / TileSize())
-			&& mFOV->InFOV((int)(x + TileSize()) / TileSize(), (int)(y - TileSize()) / TileSize()))
+		if (!IsOpaque((int)(x + TileSize() * 0.5f) / TileSize(), (int)(y - TileSize() * 0.5f) / TileSize())
+			&& mFOV->InFOV((int)(x + TileSize() * 0.5f) / TileSize(), (int)(y - TileSize() * 0.5f) / TileSize()))
 			return true;
-		if (!IsOpaque((int)(x - TileSize()) / TileSize(), (int)(y + TileSize()) / TileSize())
-			&& mFOV->InFOV((int)(x - TileSize()) / TileSize(), (int)(y + TileSize()) / TileSize()))
+		if (!IsOpaque((int)(x - TileSize() * 0.5f) / TileSize(), (int)(y + TileSize() * 0.5f) / TileSize())
+			&& mFOV->InFOV((int)(x - TileSize() * 0.5f) / TileSize(), (int)(y + TileSize() * 0.5f) / TileSize()))
 			return true;
-		if (!IsOpaque((int)(x - TileSize()) / TileSize(), (int)(y - TileSize()) / TileSize())
-			&& mFOV->InFOV((int)(x - TileSize()) / TileSize(), (int)(y - TileSize()) / TileSize()))
+		if (!IsOpaque((int)(x - TileSize() * 0.5f) / TileSize(), (int)(y - TileSize() * 0.5f) / TileSize())
+			&& mFOV->InFOV((int)(x - TileSize() * 0.5f) / TileSize(), (int)(y - TileSize() * 0.5f) / TileSize()))
 			return true;
 	}
 
@@ -134,9 +134,6 @@ Square::Vector2 Map::Exit() const
 
 void Map::Update()
 {
-	if (Square::InputHandler::Instance().KeyPressed(SDL_SCANCODE_SPACE))
-		BuildMap();
-
 	if (mFocus != nullptr)
 	{
 		if (mVisionTimer <= 0.0f)

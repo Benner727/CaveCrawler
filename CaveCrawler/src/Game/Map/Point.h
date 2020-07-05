@@ -19,39 +19,43 @@ struct Point
 	Point(int x = 0, int y = 0)
 		: x(x), y(y) {}
 
-	inline void Translate(int dir)
+	inline Point Translate(int dir)
 	{
+		Point newPoint = *this;
+
 		switch (dir)
 		{
 		case Direction::north:
-			y--;
+			newPoint.y--;
 			break;
 		case Direction::south:
-			y++;
+			newPoint.y++;
 			break;
 		case Direction::west:
-			x--;
+			newPoint.x--;
 			break;
 		case Direction::east:
-			x++;
+			newPoint.x++;
 			break;
 		case Direction::northeast:
-			y--;
-			x++;
+			newPoint.y--;
+			newPoint.x++;
 			break;
 		case Direction::northwest:
-			y--;
-			x--;
+			newPoint.y--;
+			newPoint.x--;
 			break;
 		case Direction::southeast:
-			y++;
-			x++;
+			newPoint.y++;
+			newPoint.x++;
 			break;
 		case Direction::southwest:
-			y++;
-			x--;
+			newPoint.y++;
+			newPoint.x--;
 			break;
 		}
+
+		return newPoint;
 	}
 
 	bool operator < (const Point& rhs) const

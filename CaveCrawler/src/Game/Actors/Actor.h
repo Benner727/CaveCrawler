@@ -4,10 +4,9 @@
 
 class Actor : public Square::PhysEntity
 {
-private:
+protected:
 	std::shared_ptr<Map> mMap;
 
-protected:
 	bool HasGround();
 	bool HasCeiling();
 	bool HasLeftWall();

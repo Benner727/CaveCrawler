@@ -48,6 +48,8 @@ public:
 
 	inline bool Dead() const { return (mHealth <= 0); }
 
+	inline Square::Vector2 Size() const { return mSprite->ScaledDimensions(); }
+
 	void Update();
 	void Render();
 };

@@ -2,6 +2,7 @@
 
 #include <list>
 #include <algorithm>
+#include <limits>
 
 #include "Game/Map/Map.h"
 
@@ -12,8 +13,6 @@ private:
 	{
 		Point position;
 		Point parent;
-		int distance;
-		int cost;
 
 		bool operator == (const Node& other)
 		{
@@ -25,38 +24,39 @@ private:
 			return position == other;
 		}
 
-		bool operator < (const Node& other)
-		{
-			return distance < other.distance;
-		}
-
 		Node()
 		{
-			cost = std::numeric_limits<int>::infinity();
-			distance = std::numeric_limits<int>::infinity();
 		}
 	};
 
-	const int ORTHOGONAL_COST = 10;
-	const int DIAGONAL_COST = 14;
-	const int MAX_COST = 320; // 32 tiles orthogonally
-
 	std::shared_ptr<Map> mMap;
-	Point mStart;
-	Point mEnd;
-	std::list<Node> mOpenNodes;
-	std::list<Node> mClosedNodes;
+	std::shared_ptr<Square::GameObject> mTarget;
 
-	bool mUseDiagonals;
+	bool mUseDiagonals = true;
 
-	bool CanWalkTo(Point p, int direction);
-	bool FillOpenNodes(Node& n);
-	bool UnviablePoint(Point p, int cost);
-	int CalculateDistanceToEnd(Point p);
+	Point mSource;
+	std::vector<int> mDijkstraGrid;
+	std::vector<bool> mLosGrid;
+	std::map<Point, Point> mFlowField;
+
+	int mFarthestDistance;
+
+	bool PathFinder::CanWalkTo(Point p, int direction);
+
+	void CalculateLos(Point pos);
+
+	void GenerateDijkstraGrid();
+	void GenerateFlowField();
+
+	void GeneratePaths();
 
 public:
-	PathFinder(std::shared_ptr<Map> map);
+	PathFinder(std::shared_ptr<Map> map, std::shared_ptr<Square::GameObject> target);
 	~PathFinder() = default;
 
-	std::list<Point> GeneratePath(Square::Vector2 source, Square::Vector2 destination, bool useDiagonals = true);
+	Point NextWaypoint(Square::Vector2 source, Square::Vector2 size);
+	bool InLos(Square::Vector2 source, Square::Vector2 size);
+
+	void Update();
+	void Render();
 };

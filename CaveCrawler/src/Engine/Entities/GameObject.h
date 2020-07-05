@@ -43,6 +43,8 @@ namespace Square {
 		void Translate(Vector2 vec, SPACE space = world);
 		void Rotate(float amount);
 
+		inline virtual Square::Vector2 Size() const { return Square::VEC2_ZERO; }
+
 		virtual void Update();
 		virtual void Render(bool ignoreCamera = false);
 

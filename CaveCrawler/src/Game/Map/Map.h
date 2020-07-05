@@ -21,7 +21,6 @@ private:
 	CaveGenerator* mMapGenerator;
 
 	void ClearMap();
-	void BuildMap();
 
 public:
 	Map(int width, int height);
@@ -40,6 +39,8 @@ public:
 	inline int Height() const { return mHeight; }
 
 	inline int TileSize() const { return mMap.front()->TILE_SIZE; }
+
+	void BuildMap();
 
 	Square::Vector2 Entry() const;
 	Square::Vector2 Exit() const;
